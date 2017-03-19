@@ -1,3 +1,3 @@
-public interface test2{
+public interface Test2{
 
 }
