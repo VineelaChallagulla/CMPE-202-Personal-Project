@@ -20,6 +20,12 @@
         <artifactId>antlr4-maven-plugin</artifactId>
         <version>${antlr4.plugin.version}</version>
     </dependency>
+    
+    <dependency>
+    <groupId>net.sourceforge.plantuml</groupId>
+    <artifactId>plantuml</artifactId>
+    <version>6703</version>
+</dependency>
 </dependencies>
 <build>
     <plugins>
