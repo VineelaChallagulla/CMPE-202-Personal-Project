@@ -4,41 +4,45 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.util.List;
 
+import net.sourceforge.plantuml.GeneratedImage;
+import net.sourceforge.plantuml.SourceFileReader;
 import net.sourceforge.plantuml.SourceStringReader;
+import umlparser.ClassExtractor;
 
 public class SyntaxToUML {
-	
-	public static void generateUMLFromFile(String path) throws FileNotFoundException{
-	
-	File file = new File("newfile.png");
-	String content = "This is the text content";
-	OutputStream png = new FileOutputStream(file);
-	String source = new String();
-	source+=  "@startuml\n";
-	source += "Bob -> Alice : hello\n";
-	source += "@enduml\n";
 
-	SourceStringReader reader = new SourceStringReader(source);
-	// Write the first image to "png"
-	try {
-		String desc = reader.generateImage(png);
-		System.out.print(desc);
-	} catch (IOException e) {
-		// TODO Auto-generated catch block
-		e.printStackTrace();
-	}
-	// Return a null string if no generation
-	}
-	
-	public static void main(String[] args){
+	public static void generateUMLFromFile(String path) throws IOException, InterruptedException, URISyntaxException {
+
+		URL filePath = ClassExtractor.class.getResource("uml_syntax_test_input");
+		File file;
+		file = new File(filePath.toURI());
+
+		SourceFileReader reader = new SourceFileReader(file);
+		// Write the first image to "png"
 		try {
-			generateUMLFromFile("path");
+			List<GeneratedImage> list = reader.getGeneratedImages();
+			// Generated files
+			File png = list.get(0).getPngFile();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		// Return a null string if no generation
+	}
+
+	public static void main(String[] args) throws IOException, InterruptedException, URISyntaxException {
+		try {
+			generateUMLFromFile("uml_syntax_test_input");
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+
 	}
 }
