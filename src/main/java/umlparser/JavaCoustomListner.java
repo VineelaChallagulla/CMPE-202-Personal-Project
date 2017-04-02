@@ -11,104 +11,77 @@ import cmpe202.project.JavaParser.VariableDeclaratorContext;
 
 public class JavaCoustomListner extends JavaBaseListener {
 
-	JavaParser parser;
+	private JavaParser parser;
+	private ClassDefinition classDefinition;
 
 	public JavaCoustomListner(JavaParser parser) {
 		this.parser = parser;
+
 	}
 
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>
-	 * The default implementation doesvftfv nothing.
-	 * </p>
-	 */
+	public ClassDefinition getClassDefinition() {
+		return classDefinition;
+	}
+
+	public void setClassDefinition(ClassDefinition classDefinition) {
+		this.classDefinition = classDefinition;
+	}
+
 	@Override
 	public void enterPackageDeclaration(JavaParser.PackageDeclarationContext ctx) {
+		this.classDefinition.setPackageName(ctx.qualifiedName().Identifier().toString());
 
-		System.out.println(ctx.qualifiedName().Identifier());
 	}
 
 	@Override
-	public void enterMethodDeclaration(JavaParser.MethodDeclarationContext ctx) { // need
-																					// parser
-																					// to
-																					// get
-																					// tokens
+	public void enterMethodDeclaration(JavaParser.MethodDeclarationContext ctx) {
 		TokenStream tokens = parser.getTokenStream();
 		String type = "void";
 		if (ctx.type() != null) {
 			type = tokens.getText(ctx.type());
 		}
 		String args = tokens.getText(ctx.formalParameters());
-		System.out.println("\t" + type + " " + ctx.Identifier() + args + ";");
+		this.classDefinition.addMethodSignature("\t" + type + " " + ctx.Identifier() + args + ";");
 	}
 
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>
-	 * The default implementation does nothing.
-	 * </p>
-	 */
 	@Override
 	public void exitMethodDeclaration(JavaParser.MethodDeclarationContext ctx) {
 
 	}
 
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>
-	 * The default implementation does nothing.
-	 * </p>
-	 */
 	@Override
 	public void enterClassDeclaration(JavaParser.ClassDeclarationContext ctx) {
+
+		this.classDefinition.setName(ctx.Identifier().getText());
 
 		TokenStream tokens = parser.getTokenStream();
 		String type = "void";
 		if (ctx.type() != null) {
 			type = tokens.getText(ctx.type());
+			this.classDefinition.setExtendsClassName(type);
 		}
 
 		ArrayList<String> implementList = new ArrayList<String>();
 		if (ctx.typeList() != null) {
 			for (TypeContext interfaceType : ctx.typeList().type()) {
 				implementList.add(tokens.getText(interfaceType));
+
 			}
 		}
-
-		System.out.println("class " + ctx.Identifier() + "extends" + type + "implements" + implementList + " {");
+		this.classDefinition.setImplementInterfaceNames(implementList);
 
 	}
 
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>
-	 * The default implementation does nothing.
-	 * </p>
-	 */
 	@Override
 	public void exitClassDeclaration(JavaParser.ClassDeclarationContext ctx) {
 
-		System.out.println("}");
 	}
 
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>
-	 * The default implementation does nothing.
-	 * </p>
-	 */
 	@Override
 	public void enterFieldDeclaration(JavaParser.FieldDeclarationContext ctx) {
 
 		TokenStream tokens = parser.getTokenStream();
-		String variableType;
+		String variableType = null;
 		if (ctx.type() != null) {
 
 			variableType = tokens.getText(ctx.type());
@@ -116,11 +89,12 @@ public class JavaCoustomListner extends JavaBaseListener {
 			if (variableType.contains("[")) {
 
 			}
-			System.out.println(variableType);
+
 		}
 
 		for (VariableDeclaratorContext variableDeclaratorContext : ctx.variableDeclarators().variableDeclarator()) {
-			System.out.println(variableDeclaratorContext.variableDeclaratorId().Identifier());
+			this.classDefinition.addVariable(variableDeclaratorContext.variableDeclaratorId().Identifier().getText(),
+					variableType);
 
 		}
 
