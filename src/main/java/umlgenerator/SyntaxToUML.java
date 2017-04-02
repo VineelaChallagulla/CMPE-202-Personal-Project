@@ -30,7 +30,6 @@ public class SyntaxToUML {
 			// Generated files
 			File png = list.get(0).getPngFile();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		// Return a null string if no generation
@@ -40,7 +39,6 @@ public class SyntaxToUML {
 		try {
 			generateUMLFromFile("uml_syntax_test_input");
 		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
