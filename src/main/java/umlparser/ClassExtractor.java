@@ -3,15 +3,14 @@ package umlparser;
 
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CommonTokenStream;
-import org.antlr.v4.runtime.ParserRuleContext;
-import org.antlr.v4.runtime.Token;
+
 import org.antlr.v4.runtime.tree.*;
 
-import cmpe202.project.Java8BaseListener;
-import cmpe202.project.Java8Lexer;
-import cmpe202.project.Java8Parser;
+import cmpe202.project.JavaBaseListener;
+import cmpe202.project.JavaLexer;
+import cmpe202.project.JavaParser;
 
-import java.io.FileInputStream;
+
 import java.io.InputStream;
 
 public class ClassExtractor {
@@ -26,13 +25,18 @@ public class ClassExtractor {
         is = ClassExtractor.class.getResourceAsStream("test.properties");
         ANTLRInputStream input = new ANTLRInputStream(is);
 
-        Java8Lexer lexer = new Java8Lexer(input);
+        JavaLexer lexer = new JavaLexer(input);
         CommonTokenStream tokens = new CommonTokenStream(lexer);
-        Java8Parser parser = new Java8Parser(tokens);
+        JavaParser parser = new JavaParser(tokens);
         ParseTree tree = parser.compilationUnit(); // parse
 
         ParseTreeWalker walker = new ParseTreeWalker(); // create standard walker
-        Java8BaseListener extractor = new JavaCoustomListner(parser);
-        walker.walk(extractor, tree); // initiate walk of tree with listener
+        JavaCoustomListner extractor = new JavaCoustomListner(parser);
+        ClassDefinition classDefinition = new ClassDefinition();
+        extractor.setClassDefinition(classDefinition);
+        walker.walk(extractor, tree); // initiate walk of tree with listener     
+        ClassDefinitionsToPlantUmlTransformer ClassDefinitionsToPlantUmlTransformer = new ClassDefinitionsToPlantUmlTransformer();
+        System.out.println(ClassDefinitionsToPlantUmlTransformer.getTransformedClassDefinition(classDefinition));
+        
     }
 }
