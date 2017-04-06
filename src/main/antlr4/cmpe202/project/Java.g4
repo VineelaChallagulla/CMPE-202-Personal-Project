@@ -401,7 +401,7 @@ defaultValue
     :   'default' elementValue
     ;
 
-// STATEMENTS / BLOCKS
+// STATEMENTS / BLOCKS 
 
 block
     :   '{' blockStatement* '}'
