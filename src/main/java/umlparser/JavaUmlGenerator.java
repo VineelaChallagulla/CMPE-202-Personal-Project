@@ -4,13 +4,15 @@ import org.apache.commons.cli.*;
 import org.apache.commons.cli.DefaultParser;
 import java.util.logging.Logger;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 public class JavaUmlGenerator {
 	private final static Logger LOGGER = Logger.getLogger(JavaUmlGenerator.class.getName());
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws FileNotFoundException, IOException {
 
 		Options options = new Options();
 
@@ -43,6 +45,17 @@ public class JavaUmlGenerator {
 		LOGGER.fine("Input Directory " + inputDirectoryPath);
 		LOGGER.fine("Out Directory " + outputDirectoryPath);
 		List<String> listOfJavaSourceFiles = getJavaSorceFiles(inputDirectoryPath);
+		ClassExtractor classExtractor = new ClassExtractor();
+		List<ClassDefinition> listOfClassDefinitions = new ArrayList<>();
+		for (String filePath : listOfJavaSourceFiles) {
+
+			listOfClassDefinitions.add(classExtractor.extractClassDefinition(filePath));
+		}
+		ClassDefinitionsToPlantUmlTransformer classDefinitionsToPlantUmlTransformer = new ClassDefinitionsToPlantUmlTransformer();
+		for (ClassDefinition classDefinition : listOfClassDefinitions) {
+
+			classDefinitionsToPlantUmlTransformer.getTransformedClassDefinition(classDefinition);
+		}
 
 	}
 
