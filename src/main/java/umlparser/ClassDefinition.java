@@ -102,5 +102,4 @@ public class ClassDefinition {
 			return false;
 		return true;
 	}
-
 }
