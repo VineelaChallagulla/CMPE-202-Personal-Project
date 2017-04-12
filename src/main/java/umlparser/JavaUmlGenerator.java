@@ -75,7 +75,6 @@ public class JavaUmlGenerator {
 		}
 
 		return listOfJavaSourceFiles;
-
 	}
 
 }
