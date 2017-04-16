@@ -4,36 +4,39 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class ClassRelations {
+public enum ClassRelations {
+	INSTANCE;
 	
 	private Map<String, List<String>> implementsMap = new HashMap<>();
 	
-	private Map<String, List<String>> containsMap = new HashMap<>();
+	private Map<String, List<Map<String, Integer>>> compositionMap = new HashMap<>();
+	
+	private Map<String, List<Map<String, Integer>>> aggregationMap = new HashMap<>();	
 	
 	private Map<String, String> extendsMap = new HashMap<>();
-
-	public Map<String, List<String>> getImplementsMap() {
-		return implementsMap;
+	
+	
+	void addImplementationRelation(String className, List<String> implementedClasses){
+		implementsMap.put(className, implementedClasses);	
+		
 	}
-
-	public void setImplementsMap(Map<String, List<String>> implementsMap) {
-		this.implementsMap = implementsMap;
+	
+	void addCompositionRelation(String className, List<Map<String, Integer>> compositionRelation){
+		compositionMap.put(className, compositionRelation);	
+		
 	}
-
-	public Map<String, List<String>> getContainsMap() {
-		return containsMap;
+	
+	
+	
+	void aggregationRelation(String className, List<Map<String, Integer>> aggregationRelation){
+		aggregationMap.put(className, aggregationRelation);	
+		
 	}
+	
 
-	public void setContainsMap(Map<String, List<String>> containsMap) {
-		this.containsMap = containsMap;
+	void addextendsRelation(String className, String extendedClass){
+		extendsMap.put(className, extendedClass);	
+		
 	}
-
-	public Map<String, String> getExtendsMap() {
-		return extendsMap;
-	}
-
-	public void setExtendsMap(Map<String, String> extendsMap) {
-		this.extendsMap = extendsMap;
-	}	
 	
 }
