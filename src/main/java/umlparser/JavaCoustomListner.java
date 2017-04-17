@@ -29,7 +29,8 @@ public class JavaCoustomListner extends JavaBaseListener {
 
 	@Override
 	public void enterPackageDeclaration(JavaParser.PackageDeclarationContext ctx) {
-		this.classDefinition.setPackageName(ctx.qualifiedName().Identifier().toString());
+		this.classDefinition.setPackageName(ctx.qualifiedName().Identifier(0).getText());
+
 
 	}
 
@@ -41,7 +42,7 @@ public class JavaCoustomListner extends JavaBaseListener {
 			type = tokens.getText(ctx.type());
 		}
 		String args = tokens.getText(ctx.formalParameters());
-		this.classDefinition.addMethodSignature("\t" + type + " " + ctx.Identifier() + args + ";");
+		this.classDefinition.addMethodSignature("\t" + type + " " + ctx.Identifier() + args );
 	}
 
 	@Override
