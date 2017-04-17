@@ -2,10 +2,14 @@ package umlparser;
 
 import org.apache.commons.cli.*;
 import org.apache.commons.cli.DefaultParser;
+
+import umlgenerator.SyntaxToUML;
+
 import java.util.logging.Logger;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -47,16 +51,30 @@ public class JavaUmlGenerator {
 		List<String> listOfJavaSourceFiles = getJavaSorceFiles(inputDirectoryPath);
 		ClassExtractor classExtractor = new ClassExtractor();
 		List<ClassDefinition> listOfClassDefinitions = new ArrayList<>();
+		RelationsExtractorFromClassDefinition relationsExtractorFromClassDefinition = 
+				new RelationsExtractorFromClassDefinition();
 		for (String filePath : listOfJavaSourceFiles) {
 
-			listOfClassDefinitions.add(classExtractor.extractClassDefinition(filePath));
+			listOfClassDefinitions.add(classExtractor.extractClassDefinition(inputDirectoryPath+File.separator+filePath));
 		}
 		ClassDefinitionsToPlantUmlTransformer classDefinitionsToPlantUmlTransformer = new ClassDefinitionsToPlantUmlTransformer();
+		StringBuffer stringBuffer = new StringBuffer();
 		for (ClassDefinition classDefinition : listOfClassDefinitions) {
+			
+			ClassRelations classRelations = relationsExtractorFromClassDefinition.extractRelations(classDefinition);	
+			stringBuffer.append(classDefinitionsToPlantUmlTransformer.getTransformedClassDefinition(classDefinition));
 
-			classDefinitionsToPlantUmlTransformer.getTransformedClassDefinition(classDefinition);
+//			classDefinitionsToPlantUmlTransformer.getTransformedClassDefinition(classDefinition);
+//			System.out.println(classDefinition.toString());
 		}
-
+		
+		
+		try {
+			SyntaxToUML.generateUml(stringBuffer.toString(), outputDirectoryPath);
+		} catch (URISyntaxException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	public static List<String> getJavaSorceFiles(String inputDirectoryPath) {
@@ -75,6 +93,7 @@ public class JavaUmlGenerator {
 		}
 
 		return listOfJavaSourceFiles;
+
 	}
 
 }
