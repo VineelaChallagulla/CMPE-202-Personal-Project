@@ -102,4 +102,12 @@ public class ClassDefinition {
 			return false;
 		return true;
 	}
+
+	@Override
+	public String toString() {
+		return "ClassDefinition  packageName=" + packageName + ", name=" + name + ", extendsClassName="
+				+ extendsClassName + ", implementInterfaceNames=" + implementInterfaceNames + ", variables=" + variables
+				+ ", methodSignatures=" + methodSignatures ;
+	}
+
 }
