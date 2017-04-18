@@ -3,6 +3,7 @@ package umlparser;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 /*@startuml
 package Classic <<Folder>> {
@@ -44,15 +45,24 @@ public class ClassDefinitionsToPlantUmlTransformer {
 	private static final String EXTENDS = "---|>";
 	private static final String IMPLEMENTS = "....|>";
 	
+	public enum Primitive {
+		Boolean, Char, Byte, Short, Int, Long, Float, Double
+	}
+
 	
 	
 	public String getTransformedClassDefinition(ClassDefinition classDefinition){		
 		StringBuffer buffer = new StringBuffer("@startuml"+"\n");
-		buffer.append("package " + classDefinition.getPackageName()+ " {" +"\n");		
+		if(classDefinition.getPackageName() !=null && classDefinition.getPackageName().isEmpty()){
+			buffer.append("package " + classDefinition.getPackageName()+ " {" +"\n");	
+		}			
 		buffer.append("class " + classDefinition.getName() + " {"+ "\n");		
 		buffer.append(getMethodSyntax(classDefinition.getMethodSignatures())+ "\n");
 		buffer.append(getVariablesSyntax(classDefinition.getName()) );
-		buffer.append("}"+"\n");
+		
+		if(classDefinition.getPackageName() !=null && classDefinition.getPackageName().isEmpty()){
+			buffer.append("}"+"\n");	
+		}	
 		buffer.append("}"+"\n");
 		if (classDefinition.getExtendsClassName() != null){
 			buffer.append(getExtendsSyntax(classDefinition));
@@ -79,8 +89,14 @@ public class ClassDefinitionsToPlantUmlTransformer {
 		for(Association association: associations)
 		
 		{
-			
-			buffer.append(association.getName()+" : "+ association.getType()+ "\n");
+			if (isPrimitive(association.getType())){
+			buffer.append(association.getName()+" : "+ association.getType()  );
+			if(association.getNumber() != null){
+				buffer.append(" ("  +association.getNumber()+ ")");
+				
+			}
+			buffer.append("\n");
+			}
 		}
 	
 		return buffer.toString();
@@ -118,5 +134,57 @@ public class ClassDefinitionsToPlantUmlTransformer {
 		return buffer.toString();
 		
 	}
+	private boolean isPrimitive(String type){
+		boolean isPrimitive = false;
+		for(Primitive primitive:Primitive.values()){
+			if(primitive.toString().equalsIgnoreCase(type)){
+				isPrimitive =true;
+			}
+			
+		}
+		return isPrimitive;
+	}
 	
+	public String  getAssociations( ClassDefinition classDefinition){
+		ClassRelations classRelations = ClassRelations.INSTANCE;
+		StringBuffer buffer = new StringBuffer();
+		
+		
+		Map<String, List<Association>> map = classRelations.getAggregationMap();
+		
+		for(Entry<String, List<Association>> entry: map.entrySet()){
+			
+			for(Association asociation: entry.getValue()){
+				Link link= new Link();
+				LinkKey linkKey= new LinkKey();
+				link.setSource(entry.getKey());
+				link.setTarget(asociation.getName());
+				link.setTarget_number(asociation.getNumber());
+				linkKey.setSource(entry.getKey());
+				linkKey.setTarget(asociation.getName());
+				
+				if(classRelations.getLinks().get(linkKey) == null){
+					classRelations.getLinks().put(linkKey, link);
+				}else{
+					link = classRelations.getLinks().get(linkKey);
+					link.setTarget_number(asociation.getNumber());
+					classRelations.getLinks().put(linkKey, link);
+				
+			}
+			
+		}
+
+		
+		
+			
+			
+	}
+		/*Class01 "1" *-- "many" Class028*/
+		for (Link link:classRelations.getLinks().values()){
+			
+			
+		}
+		return buffer
+	
+}
 }
