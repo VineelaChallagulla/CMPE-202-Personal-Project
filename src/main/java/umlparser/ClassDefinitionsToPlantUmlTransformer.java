@@ -36,6 +36,21 @@ list : String
 }
 @enduml
 
+
+
+@startuml
+class A {
+
+x : int
+y : int (many)
+}
+A 0 *-- many b
+A 0 *-- 0 c
+A 0 *-- many d
+A 0 *-- 0 x
+A 0 *-- many y
+@enduml
+
 */
 
 public class ClassDefinitionsToPlantUmlTransformer {	
@@ -50,9 +65,28 @@ public class ClassDefinitionsToPlantUmlTransformer {
 	}
 
 	
+	public String getUmlSyntax(List<ClassDefinition> listOfClassDefinitions){	
+		RelationsExtractorFromClassDefinition relationsExtractorFromClassDefinition = 
+				new RelationsExtractorFromClassDefinition();
+		ClassDefinitionsToPlantUmlTransformer classDefinitionsToPlantUmlTransformer = new ClassDefinitionsToPlantUmlTransformer();
+		StringBuffer stringBuffer = new StringBuffer("@startuml"+"\n");
+		for (ClassDefinition classDefinition : listOfClassDefinitions) {
+			
+			ClassRelations classRelations = relationsExtractorFromClassDefinition.extractRelations(classDefinition);	
+			stringBuffer.append(classDefinitionsToPlantUmlTransformer.getTransformedClassDefinition(classDefinition));
+
+//			classDefinitionsToPlantUmlTransformer.getTransformedClassDefinition(classDefinition);
+//			System.out.println(classDefinition.toString());
+		}
+		stringBuffer.append(getAssociations());
+		stringBuffer.append("@enduml"+ "\n");
+		return stringBuffer.toString();
+		
+	}
+	
 	
 	public String getTransformedClassDefinition(ClassDefinition classDefinition){		
-		StringBuffer buffer = new StringBuffer("@startuml"+"\n");
+		StringBuffer buffer = new StringBuffer();
 		if(classDefinition.getPackageName() !=null && classDefinition.getPackageName().isEmpty()){
 			buffer.append("package " + classDefinition.getPackageName()+ " {" +"\n");	
 		}			
@@ -72,8 +106,7 @@ public class ClassDefinitionsToPlantUmlTransformer {
 			buffer.append(getImplementsSyntax(classDefinition));
 		}
 		
-		
-		buffer.append("@enduml"+ "\n");
+		populateAssociations(classDefinition);
 		
 		
 		return buffer.toString();	
@@ -145,7 +178,7 @@ public class ClassDefinitionsToPlantUmlTransformer {
 		return isPrimitive;
 	}
 	
-	public String  getAssociations( ClassDefinition classDefinition){
+	public void  populateAssociations( ClassDefinition classDefinition){
 		ClassRelations classRelations = ClassRelations.INSTANCE;
 		StringBuffer buffer = new StringBuffer();
 		
@@ -155,23 +188,28 @@ public class ClassDefinitionsToPlantUmlTransformer {
 		for(Entry<String, List<Association>> entry: map.entrySet()){
 			
 			for(Association asociation: entry.getValue()){
+				
 				Link link= new Link();
 				LinkKey linkKey= new LinkKey();
 				link.setSource(entry.getKey());
-				link.setTarget(asociation.getName());
+				link.setTarget(asociation.getType());
 				link.setTarget_number(asociation.getNumber());
 				linkKey.setSource(entry.getKey());
-				linkKey.setTarget(asociation.getName());
+				linkKey.setTarget(asociation.getType());
 				
 				if(classRelations.getLinks().get(linkKey) == null){
+					System.out.println("first");
+					System.out.println(link);
 					classRelations.getLinks().put(linkKey, link);
 				}else{
 					link = classRelations.getLinks().get(linkKey);
-					link.setTarget_number(asociation.getNumber());
-					classRelations.getLinks().put(linkKey, link);
+					link.setSource_number(asociation.getNumber());
+					System.out.println("second");
+					System.out.println(link);
+					
 				
 			}
-			
+
 		}
 
 		
@@ -179,12 +217,26 @@ public class ClassDefinitionsToPlantUmlTransformer {
 			
 			
 	}
-		/*Class01 "1" *-- "many" Class028*/
-		for (Link link:classRelations.getLinks().values()){
-			
-			
-		}
-		return buffer
+
 	
 }
+	
+	
+	public String  getAssociations(  ){
+		ClassRelations classRelations = ClassRelations.INSTANCE;
+		StringBuffer buffer = new StringBuffer();
+		
+		
+		/*Class01 "1" *-- "many" Class028*/
+		for (Link link:classRelations.getLinks().values()){
+			buffer.append(link.getSource()).append(" ").append('"').append(link.getSource_number() != null?link.getSource_number(): "0").append('"').append(" ");
+			buffer.append(COMPOSITION).append(" ").append('"').append(link.getTarget_number()!= null? link.getTarget_number() : "0" ).append('"').append(" ").append(link.getTarget());
+			buffer.append("\n");
+			
+		}
+		return buffer.toString();
+	
+}
+	
+	
 }
