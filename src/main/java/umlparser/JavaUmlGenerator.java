@@ -51,26 +51,17 @@ public class JavaUmlGenerator {
 		List<String> listOfJavaSourceFiles = getJavaSorceFiles(inputDirectoryPath);
 		ClassExtractor classExtractor = new ClassExtractor();
 		List<ClassDefinition> listOfClassDefinitions = new ArrayList<>();
-		RelationsExtractorFromClassDefinition relationsExtractorFromClassDefinition = 
-				new RelationsExtractorFromClassDefinition();
+
 		for (String filePath : listOfJavaSourceFiles) {
 
 			listOfClassDefinitions.add(classExtractor.extractClassDefinition(inputDirectoryPath+File.separator+filePath));
 		}
-		ClassDefinitionsToPlantUmlTransformer classDefinitionsToPlantUmlTransformer = new ClassDefinitionsToPlantUmlTransformer();
-		StringBuffer stringBuffer = new StringBuffer();
-		for (ClassDefinition classDefinition : listOfClassDefinitions) {
-			
-			ClassRelations classRelations = relationsExtractorFromClassDefinition.extractRelations(classDefinition);	
-			stringBuffer.append(classDefinitionsToPlantUmlTransformer.getTransformedClassDefinition(classDefinition));
+		ClassDefinitionsToPlantUmlTransformer  classDefinitionsToPlantUmlTransformer= new  ClassDefinitionsToPlantUmlTransformer();
 
-//			classDefinitionsToPlantUmlTransformer.getTransformedClassDefinition(classDefinition);
-//			System.out.println(classDefinition.toString());
-		}
-		
+			String umlSyntax =	classDefinitionsToPlantUmlTransformer.getUmlSyntax(listOfClassDefinitions);
 		
 		try {
-			SyntaxToUML.generateUml(stringBuffer.toString(), outputDirectoryPath);
+			SyntaxToUML.generateUml(umlSyntax, outputDirectoryPath);
 		} catch (URISyntaxException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
