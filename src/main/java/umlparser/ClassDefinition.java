@@ -10,7 +10,9 @@ public class ClassDefinition {
 	private String extendsClassName;
 	private ArrayList<String> implementInterfaceNames;
 	private Map<String, String> variables = new HashMap<String, String>();
+	private Map<String, String> methodVariables = new HashMap<String, String>();
 	private ArrayList<String> methodSignatures = new ArrayList<String>();
+	private boolean isInterface;
 
 	public String getName() {
 		return name;
@@ -71,6 +73,15 @@ public class ClassDefinition {
 	public void addImplementInterfaceName(String implementInterfaceName) {
 		this.implementInterfaceNames.add(implementInterfaceName);
 	}
+	
+
+	public boolean isInterface() {
+		return isInterface;
+	}
+
+	public void setInterface(boolean isInterface) {
+		this.isInterface = isInterface;
+	}
 
 	@Override
 	public int hashCode() {
@@ -79,6 +90,18 @@ public class ClassDefinition {
 		result = prime * result + ((name == null) ? 0 : name.hashCode());
 		result = prime * result + ((packageName == null) ? 0 : packageName.hashCode());
 		return result;
+	}
+
+	public Map<String, String> getMethodVariables() {
+		return methodVariables;
+	}
+
+	public void setMethodVariables(Map<String, String> methodVariables) {
+		this.methodVariables = methodVariables;
+	}
+	
+	public void addMethodVariables( String type , String varable) {
+		this.methodVariables.put(type, varable);
 	}
 
 	@Override
