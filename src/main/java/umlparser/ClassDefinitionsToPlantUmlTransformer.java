@@ -59,6 +59,7 @@ public class ClassDefinitionsToPlantUmlTransformer {
 	private static final String COMPOSITION = "*--";
 	private static final String EXTENDS = "---|>";
 	private static final String IMPLEMENTS = "....|>";
+	private static final String ASSOSCIATION = "----";
 	
 	public enum Primitive {
 		Boolean, Char, Byte, Short, Int, Long, Float, Double
@@ -89,8 +90,20 @@ public class ClassDefinitionsToPlantUmlTransformer {
 		StringBuffer buffer = new StringBuffer();
 		if(classDefinition.getPackageName() !=null && classDefinition.getPackageName().isEmpty()){
 			buffer.append("package " + classDefinition.getPackageName()+ " {" +"\n");	
-		}			
-		buffer.append("class " + classDefinition.getName() + " {"+ "\n");		
+		}
+		if(!classDefinition.isInterface()){
+		/*class System << (S,#FF7700) Singleton >>*/
+		buffer.append("class " + classDefinition.getName());
+		buffer.append(" {"+ "\n");
+		
+		}
+		else if(classDefinition.isInterface()){
+			
+			/*class System << (S,#FF7700) Singleton >>*/
+			buffer.append("interface " + classDefinition.getName());
+			buffer.append(" << (Interface) >>");
+			buffer.append(" {"+ "\n");
+		}
 		buffer.append(getMethodSyntax(classDefinition.getMethodSignatures())+ "\n");
 		buffer.append(getVariablesSyntax(classDefinition.getName()) );
 		
@@ -102,7 +115,7 @@ public class ClassDefinitionsToPlantUmlTransformer {
 			buffer.append(getExtendsSyntax(classDefinition));
 		}
 		
-		if (!classDefinition.getImplementInterfaceNames().isEmpty()){
+		if (classDefinition.getImplementInterfaceNames() !=null &&!classDefinition.getImplementInterfaceNames().isEmpty()){
 			buffer.append(getImplementsSyntax(classDefinition));
 		}
 		
@@ -125,7 +138,7 @@ public class ClassDefinitionsToPlantUmlTransformer {
 			if (isPrimitive(association.getType())){
 			buffer.append(association.getName()+" : "+ association.getType()  );
 			if(association.getNumber() != null){
-				buffer.append(" ("  +association.getNumber()+ ")");
+				buffer.append(   " "+association.getNumber() );
 				
 			}
 			buffer.append("\n");
@@ -151,6 +164,7 @@ public class ClassDefinitionsToPlantUmlTransformer {
 		StringBuffer buffer = new StringBuffer(classDefinition.getName());
 		
 		buffer.append(EXTENDS + classDefinition.getExtendsClassName() );
+		buffer.append("\n");
 
 		return buffer.toString();
 		
@@ -187,15 +201,16 @@ public class ClassDefinitionsToPlantUmlTransformer {
 		
 		for(Entry<String, List<Association>> entry: map.entrySet()){
 			
-			for(Association asociation: entry.getValue()){
+			for(Association association: entry.getValue()){
+				if (!isPrimitive(association.getType())){
 				
 				Link link= new Link();
 				LinkKey linkKey= new LinkKey();
 				link.setSource(entry.getKey());
-				link.setTarget(asociation.getType());
-				link.setTarget_number(asociation.getNumber());
+				link.setTarget(association.getType());
+				link.setTarget_number(association.getNumber());
 				linkKey.setSource(entry.getKey());
-				linkKey.setTarget(asociation.getType());
+				linkKey.setTarget(association.getType());
 				
 				if(classRelations.getLinks().get(linkKey) == null){
 					System.out.println("first");
@@ -203,13 +218,13 @@ public class ClassDefinitionsToPlantUmlTransformer {
 					classRelations.getLinks().put(linkKey, link);
 				}else{
 					link = classRelations.getLinks().get(linkKey);
-					link.setSource_number(asociation.getNumber());
+					link.setSource_number(association.getNumber());
 					System.out.println("second");
 					System.out.println(link);
 					
 				
 			}
-
+				}
 		}
 
 		
@@ -229,8 +244,8 @@ public class ClassDefinitionsToPlantUmlTransformer {
 		
 		/*Class01 "1" *-- "many" Class028*/
 		for (Link link:classRelations.getLinks().values()){
-			buffer.append(link.getSource()).append(" ").append('"').append(link.getSource_number() != null?link.getSource_number(): "0").append('"').append(" ");
-			buffer.append(COMPOSITION).append(" ").append('"').append(link.getTarget_number()!= null? link.getTarget_number() : "0" ).append('"').append(" ").append(link.getTarget());
+			buffer.append(link.getSource()).append(" ").append('"').append(link.getSource_number() != null?link.getSource_number(): "1").append('"').append(" ");
+			buffer.append(ASSOSCIATION).append(" ").append('"').append(link.getTarget_number()!= null? link.getTarget_number() : "1" ).append('"').append(" ").append(link.getTarget());
 			buffer.append("\n");
 			
 		}
