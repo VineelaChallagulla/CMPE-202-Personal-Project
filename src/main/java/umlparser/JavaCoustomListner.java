@@ -42,6 +42,21 @@ public class JavaCoustomListner extends JavaBaseListener {
 			type = tokens.getText(ctx.type());
 		}
 		String args = tokens.getText(ctx.formalParameters());
+		args= args.replaceAll("\\(", "");
+		args= args.replaceAll("\\)", "");
+		 String[] arsArray = new String[1];
+		if(args.contains(",")){
+			arsArray= args.split(",");
+		}
+		else{
+			arsArray[0] = args;
+			
+		}
+
+		 for(String arg: arsArray ){
+			 String[] argSplit =  arg.split("\\s+");
+			 this.classDefinition.addMethodVariables(argSplit[0], argSplit[1]);
+		 }
 		this.classDefinition.addMethodSignature("\t" + type + " " + ctx.Identifier() + args );
 	}
 
@@ -77,6 +92,17 @@ public class JavaCoustomListner extends JavaBaseListener {
 	public void exitClassDeclaration(JavaParser.ClassDeclarationContext ctx) {
 
 	}
+	
+	@Override
+	public void   enterInterfaceDeclaration (JavaParser.InterfaceDeclarationContext ctx) {
+		
+		if(ctx.normalInterfaceDeclaration().Identifier().getText() != null){
+			this.classDefinition.setName(ctx.normalInterfaceDeclaration().Identifier().getText());
+			this.classDefinition.setInterface(true);
+		}
+		
+	}
+
 
 	@Override
 	public void enterFieldDeclaration(JavaParser.FieldDeclarationContext ctx) {
