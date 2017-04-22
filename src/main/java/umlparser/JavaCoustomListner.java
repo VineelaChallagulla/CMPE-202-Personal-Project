@@ -42,8 +42,10 @@ public class JavaCoustomListner extends JavaBaseListener {
 			type = tokens.getText(ctx.type());
 		}
 		String args = tokens.getText(ctx.formalParameters());
+		
 		args= args.replaceAll("\\(", "");
 		args= args.replaceAll("\\)", "");
+		if (!args.isEmpty()){
 		 String[] arsArray = new String[1];
 		if(args.contains(",")){
 			arsArray= args.split(",");
@@ -54,9 +56,11 @@ public class JavaCoustomListner extends JavaBaseListener {
 		}
 
 		 for(String arg: arsArray ){
+			 arg = arg.trim();
 			 String[] argSplit =  arg.split("\\s+");
 			 this.classDefinition.addMethodVariables(argSplit[0], argSplit[1]);
 		 }
+		}
 		this.classDefinition.addMethodSignature("\t" + type + " " + ctx.Identifier() + args );
 	}
 
@@ -125,6 +129,39 @@ public class JavaCoustomListner extends JavaBaseListener {
 
 		}
 
+	}
+	
+	
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterConstructorDeclaration(JavaParser.ConstructorDeclarationContext ctx) {
+		
+		
+		TokenStream tokens = parser.getTokenStream();
+		String type = "void";
+		String args = tokens.getText(ctx.formalParameters());
+		
+		args= args.replaceAll("\\(", "");
+		args= args.replaceAll("\\)", "");
+		if (!args.isEmpty()){
+		 String[] arsArray = new String[1];
+		if(args.contains(",")){
+			arsArray= args.split(",");
+		}
+		else{
+			arsArray[0] = args;
+			
+		}
+
+		 for(String arg: arsArray ){
+			 arg = arg.trim();
+			 String[] argSplit =  arg.split("\\s+");
+			 this.classDefinition.addConstructorVariables(argSplit[0], argSplit[1]);
+		 }
+		}
 	}
 
 }
