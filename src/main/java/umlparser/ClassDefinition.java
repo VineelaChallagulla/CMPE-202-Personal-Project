@@ -11,6 +11,7 @@ public class ClassDefinition {
 	private ArrayList<String> implementInterfaceNames;
 	private Map<String, String> variables = new HashMap<String, String>();
 	private Map<String, String> methodVariables = new HashMap<String, String>();
+	private Map<String, String> constructorVariables = new HashMap<String, String>();
 	private ArrayList<String> methodSignatures = new ArrayList<String>();
 	private boolean isInterface;
 
@@ -82,6 +83,20 @@ public class ClassDefinition {
 	public void setInterface(boolean isInterface) {
 		this.isInterface = isInterface;
 	}
+	
+	
+
+	public Map<String, String> getConstructorVariables() {
+		return constructorVariables;
+	}
+
+	public void setConstructorVariables(Map<String, String> constructorVariables) {
+		this.constructorVariables = constructorVariables;
+	}
+	public void addConstructorVariables(String type, String varable) {
+		this.constructorVariables.put(varable, type);
+	}
+
 
 	@Override
 	public int hashCode() {
