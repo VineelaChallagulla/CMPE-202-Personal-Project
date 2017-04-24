@@ -94,7 +94,7 @@ public class ClassDefinition {
 		this.constructorVariables = constructorVariables;
 	}
 	public void addConstructorVariables(String type, String varable) {
-		this.constructorVariables.put(varable, type);
+		this.constructorVariables.put(type, varable);
 	}
 
 
