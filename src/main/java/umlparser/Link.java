@@ -30,5 +30,10 @@ public class Link {
 	public void setTarget_number(String target_number) {
 		this.target_number = target_number;
 	}
+	@Override
+	public String toString() {
+		return "Link [source=" + source + ", target=" + target + ", source_number=" + source_number + ", target_number="
+				+ target_number + "]";
+	}
 
 }
