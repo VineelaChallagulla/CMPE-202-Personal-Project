@@ -21,8 +21,7 @@ public class LinkKey {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((source == null) ? 0 : source.hashCode());
-		result = prime * result + ((target == null) ? 0 : target.hashCode());
+		result =prime * result + ((source == null) ? 0 : source.hashCode())+ ((target == null) ? 0 : target.hashCode()) ;
 		return result;
 	}
 	@Override
@@ -42,5 +41,9 @@ public class LinkKey {
 
 
 }
+	@Override
+	public String toString() {
+		return "LinkKey [source=" + source + ", target=" + target + "]";
+	}
 
 }
