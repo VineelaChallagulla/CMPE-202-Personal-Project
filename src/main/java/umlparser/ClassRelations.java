@@ -42,7 +42,7 @@ public enum ClassRelations {
 	}
 	
 	void addAssociationRelation(String className, List<Association> associationRelation){
-		aggregationMap.put(className, associationRelation);	
+		associationMap.put(className, associationRelation);	
 		
 	}	
 	
