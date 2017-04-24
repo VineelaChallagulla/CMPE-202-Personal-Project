@@ -61,9 +61,9 @@ public class RelationsExtractorFromClassDefinition {
 	}
 
 	public void setAssociation(List<Association> associationList, Entry<String, String> entry) {
-		Matcher genericMatcher = GENERIC_PATTERN.matcher(entry.getValue().toString());
+		Matcher genericMatcher = GENERIC_PATTERN.matcher(entry.getKey().toString());
 		Association association = new Association();
-		Matcher arrayMatcher = ARRAY_PATTERN.matcher(entry.getValue().toString());
+		Matcher arrayMatcher = ARRAY_PATTERN.matcher(entry.getKey().toString());
 		if(arrayMatcher.matches()){
 			String number = null;
 			String type = arrayMatcher.group(1);
@@ -71,7 +71,7 @@ public class RelationsExtractorFromClassDefinition {
 				number =  arrayMatcher.group(2);
 			}else{
 				
-				number = "many";
+				number = "*";
 			}
 			association.setType(type);
 			association.setNumber(number);
@@ -82,14 +82,14 @@ public class RelationsExtractorFromClassDefinition {
 			if(genericMatcher.group(2) != null){
 			type = genericMatcher.group(2);
 			association.setType(type);
-			association.setNumber("many");
+			association.setNumber("*");
 			association.setName(entry.getKey());
 			}			
 
 		}			
 		else{
-			association.setType(entry.getValue());
-			association.setName(entry.getKey());
+			association.setType(entry.getKey());
+			association.setName(entry.getValue());
 			
 		}
 		associationList.add(association);
