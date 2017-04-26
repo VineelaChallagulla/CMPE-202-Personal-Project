@@ -137,7 +137,9 @@ public class ClassDefinitionsToPlantUmlTransformer {
 			buffer.append(" << (Interface) >>");
 			buffer.append(" {" + "\n");
 		}
-		buffer.append(getMethodSyntax(classDefinition.getMethodSignatures()) + "\n");
+		modifyVisibilityForJavaSetterGetters(classDefinition);
+		buffer.append(getMethodSyntax(new ArrayList<String>(classDefinition.getMethodIdentifierSignatureMap().values()))
+				+ "\n");
 		buffer.append(getVariablesSyntax(classDefinition.getVariables()));
 
 		if (classDefinition.getPackageName() != null && classDefinition.getPackageName().isEmpty()) {
@@ -164,22 +166,54 @@ public class ClassDefinitionsToPlantUmlTransformer {
 
 	}
 
-	public String getVariablesSyntax(Map<String, String> variables) {
+	public String getVariablesSyntax(Map<String, Variable> variables) {
 		StringBuffer buffer = new StringBuffer();
 
-		for (Entry<String, String> variable : variables.entrySet()) {
-			buffer.append(variable.getValue()).append(" : ").append(variable.getKey()).append("\n");
+		for (Entry<String, Variable> variable : variables.entrySet()) {
+			if (variable.getValue().getModifier().equals("-") || variable.getValue().getModifier().equals("+")) {
+				buffer.append(variable.getValue().getModifier()).append(" ").append(variable.getValue().getName())
+						.append(" : ").append(variable.getValue().getType()).append("\n");
+			}
 		}
 
 		return buffer.toString();
 
 	}
 
+	public void modifyVisibilityForJavaSetterGetters(ClassDefinition classDefinition) {
+		for (Entry<String, Variable> entry : classDefinition.getVariables().entrySet()) {
+			Boolean isGetMethod = false;
+			Boolean isSetMethod = false;
+
+			String getMethod = "get" + entry.getValue().getName();
+			String settMethod = "set" + entry.getValue().getName();
+
+			for (Entry<String, String> methodEntry : classDefinition.getMethodIdentifierSignatureMap().entrySet()) {
+				if (methodEntry.getKey().equalsIgnoreCase(getMethod)) {
+					isGetMethod = true;
+
+				} else if (methodEntry.getKey().equalsIgnoreCase(settMethod)) {
+					isSetMethod = true;
+
+				}
+				if (isGetMethod || isSetMethod) {
+					classDefinition.getMethodIdentifierSignatureMap().remove(methodEntry.getKey());
+
+					entry.getValue().setModifier("+");
+				}
+
+			}
+
+		}
+	}
+
 	public String getMethodSyntax(ArrayList<String> methodList) {
 		StringBuffer buffer = new StringBuffer();
 
 		for (String methodSignature : methodList) {
-			buffer.append(methodSignature).append("\n");
+			if (methodSignature.contains("+")) {
+				buffer.append(methodSignature).append("\n");
+			}
 		}
 
 		return buffer.toString();
@@ -333,21 +367,23 @@ public class ClassDefinitionsToPlantUmlTransformer {
 
 		/* Class01 "1" *-- "many" Class028 */
 		for (Link link : classRelations.getLinks().values()) {
-			if(link.getSource_number() !=null && link.getTarget_number() != null){
+			if (link.getSource_number() != null && link.getTarget_number() != null) {
 				buffer.append(link.getSource()).append(" ").append('"')
-				.append(link.getSource_number() != null ? link.getSource_number() : "1").append('"').append(" ");
-		buffer.append(BI_ASSOSCIATION).append(" ").append('"')
-				.append(link.getTarget_number() != null ? link.getTarget_number() : "1").append('"').append(" ")
-				.append(link.getTarget());
-		buffer.append("\n");
-				
-			}else{
-			buffer.append(link.getSource()).append(" ").append('"')
-					.append(link.getSource_number() != null ? link.getSource_number() : "1").append('"').append(" ");
-			buffer.append(ASSOSCIATION).append(" ").append('"')
-					.append(link.getTarget_number() != null ? link.getTarget_number() : "1").append('"').append(" ")
-					.append(link.getTarget());
-			buffer.append("\n");
+						.append(link.getSource_number() != null ? link.getSource_number() : "1").append('"')
+						.append(" ");
+				buffer.append(BI_ASSOSCIATION).append(" ").append('"')
+						.append(link.getTarget_number() != null ? link.getTarget_number() : "1").append('"').append(" ")
+						.append(link.getTarget());
+				buffer.append("\n");
+
+			} else {
+				buffer.append(link.getSource()).append(" ").append('"')
+						.append(link.getSource_number() != null ? link.getSource_number() : "1").append('"')
+						.append(" ");
+				buffer.append(ASSOSCIATION).append(" ").append('"')
+						.append(link.getTarget_number() != null ? link.getTarget_number() : "1").append('"').append(" ")
+						.append(link.getTarget());
+				buffer.append("\n");
 			}
 
 		}
@@ -361,23 +397,23 @@ public class ClassDefinitionsToPlantUmlTransformer {
 
 		/* Class01 "1" *-- "many" Class028 */
 		for (Link link : classRelations.getAggregationLinks().values()) {
-			if(link.getSource_number() !=null && link.getTarget_number() != null){
+			if (link.getSource_number() != null && link.getTarget_number() != null) {
 				buffer.append(link.getSource()).append(" ").append('"')
-				.append(link.getSource_number() != null ? link.getSource_number() : "1").append('"').append(" ");
-		buffer.append(BI_ASSOSCIATION).append(" ").append('"')
-				.append(link.getTarget_number() != null ? link.getTarget_number() : "1").append('"').append(" ")
-				.append(link.getTarget());
-		buffer.append("\n");
-		
-				
-			}else
-			buffer.append(link.getSource()).append(" ").append('"')
-					.append(link.getSource_number() != null ? link.getSource_number() : "1").append('"').append(" ");
+						.append(link.getSource_number() != null ? link.getSource_number() : "1").append('"')
+						.append(" ");
+				buffer.append(BI_ASSOSCIATION).append(" ").append('"')
+						.append(link.getTarget_number() != null ? link.getTarget_number() : "1").append('"').append(" ")
+						.append(link.getTarget());
+				buffer.append("\n");
+
+			} else
+				buffer.append(link.getSource()).append(" ").append('"')
+						.append(link.getSource_number() != null ? link.getSource_number() : "1").append('"')
+						.append(" ");
 			buffer.append(AGGREGATION).append(" ").append('"')
 					.append(link.getTarget_number() != null ? link.getTarget_number() : "1").append('"').append(" ")
 					.append(link.getTarget());
 			buffer.append("\n");
-			
 
 		}
 		return buffer.toString();
@@ -390,28 +426,29 @@ public class ClassDefinitionsToPlantUmlTransformer {
 
 		/* Class01 "1" *-- "many" Class028 */
 		for (Link link : classRelations.getCompositionLinks().values()) {
-			if(link.getSource_number() !=null && link.getTarget_number() != null){
+			if (link.getSource_number() != null && link.getTarget_number() != null) {
 				buffer.append(link.getSource()).append(" ").append('"')
-				
-				.append(link.getSource_number() != null ? link.getSource_number() : "1").append('"').append(" ");
-		buffer.append(BI_ASSOSCIATION).append(" ").append('"')
-				.append(link.getTarget_number() != null ? link.getTarget_number() : "1").append('"').append(" ")
-				.append(link.getTarget());
-		buffer.append("\n");
-				
-			}else{
+
+						.append(link.getSource_number() != null ? link.getSource_number() : "1").append('"')
+						.append(" ");
+				buffer.append(BI_ASSOSCIATION).append(" ").append('"')
+						.append(link.getTarget_number() != null ? link.getTarget_number() : "1").append('"').append(" ")
+						.append(link.getTarget());
+				buffer.append("\n");
+
+			} else {
 				buffer.append(link.getSource()).append(" ").append('"')
-			
-					.append(link.getSource_number() != null ? link.getSource_number() : "1").append('"').append(" ");
-			buffer.append(COMPOSITION).append(" ").append('"')
-					.append(link.getTarget_number() != null ? link.getTarget_number() : "1").append('"').append(" ")
-					.append(link.getTarget());
-			buffer.append("\n");
+
+						.append(link.getSource_number() != null ? link.getSource_number() : "1").append('"')
+						.append(" ");
+				buffer.append(COMPOSITION).append(" ").append('"')
+						.append(link.getTarget_number() != null ? link.getTarget_number() : "1").append('"').append(" ")
+						.append(link.getTarget());
+				buffer.append("\n");
+
+			}
 
 		}
-		
-
-	}
 		return buffer.toString();
-}
+	}
 }
