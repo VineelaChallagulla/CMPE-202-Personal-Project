@@ -54,12 +54,13 @@ public class JavaUmlGenerator {
 
 		for (String filePath : listOfJavaSourceFiles) {
 
-			listOfClassDefinitions.add(classExtractor.extractClassDefinition(inputDirectoryPath+File.separator+filePath));
+			listOfClassDefinitions
+					.add(classExtractor.extractClassDefinition(inputDirectoryPath + File.separator + filePath));
 		}
-		ClassDefinitionsToPlantUmlTransformer  classDefinitionsToPlantUmlTransformer= new  ClassDefinitionsToPlantUmlTransformer();
+		ClassDefinitionsToPlantUmlTransformer classDefinitionsToPlantUmlTransformer = new ClassDefinitionsToPlantUmlTransformer();
 
-			String umlSyntax =	classDefinitionsToPlantUmlTransformer.getUmlSyntax(listOfClassDefinitions);
-		
+		String umlSyntax = classDefinitionsToPlantUmlTransformer.getUmlSyntax(listOfClassDefinitions);
+
 		try {
 			SyntaxToUML.generateUml(umlSyntax, outputDirectoryPath);
 		} catch (URISyntaxException e) {
