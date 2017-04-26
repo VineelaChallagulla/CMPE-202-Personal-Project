@@ -3,16 +3,20 @@ package umlparser;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class ClassDefinition {
 	private String packageName;
 	private String name;
 	private String extendsClassName;
 	private ArrayList<String> implementInterfaceNames;
-	private Map<String, String> variables = new HashMap<String, String>();
-	private Map<String, String> methodVariables = new HashMap<String, String>();
-	private Map<String, String> constructorVariables = new HashMap<String, String>();
-	private ArrayList<String> methodSignatures = new ArrayList<String>();
+	private Map<String, Variable> variables = new ConcurrentHashMap<>();
+	private Map<String, Variable> methodVariables = new ConcurrentHashMap<>();
+	private Map<String, Variable> constructorVariables = new ConcurrentHashMap<>();
+	private ArrayList<String> methodSignatures = new ArrayList<>();
+	private ArrayList<String> methodIdentifiers = new ArrayList<>();
+
+	private Map<String, String> methodIdentifierSignatureMap = new ConcurrentHashMap<String, String>();
 	private boolean isInterface;
 
 	public String getName() {
@@ -31,16 +35,16 @@ public class ClassDefinition {
 		this.extendsClassName = extendsClassName;
 	}
 
-	public Map<String, String> getVariables() {
+	public Map<String, Variable> getVariables() {
 		return variables;
 	}
 
-	public void setVariables(Map<String, String> variables) {
+	public void setVariables(Map<String, Variable> variables) {
 		this.variables = variables;
 	}
 
-	public void addVariable(String variable, String type) {
-		this.variables.put(variable, type);
+	public void addVariable(String idetifier, Variable variable) {
+		this.variables.put(idetifier, variable);
 	}
 
 	public ArrayList<String> getMethodSignatures() {
@@ -74,7 +78,6 @@ public class ClassDefinition {
 	public void addImplementInterfaceName(String implementInterfaceName) {
 		this.implementInterfaceNames.add(implementInterfaceName);
 	}
-	
 
 	public boolean isInterface() {
 		return isInterface;
@@ -83,20 +86,18 @@ public class ClassDefinition {
 	public void setInterface(boolean isInterface) {
 		this.isInterface = isInterface;
 	}
-	
-	
 
-	public Map<String, String> getConstructorVariables() {
+	public Map<String, Variable> getConstructorVariables() {
 		return constructorVariables;
 	}
 
-	public void setConstructorVariables(Map<String, String> constructorVariables) {
+	public void setConstructorVariables(Map<String, Variable> constructorVariables) {
 		this.constructorVariables = constructorVariables;
 	}
-	public void addConstructorVariables(String type, String varable) {
-		this.constructorVariables.put(type, varable);
-	}
 
+	public void addConstructorVariables(String idetifier, Variable varable) {
+		this.constructorVariables.put(idetifier, varable);
+	}
 
 	@Override
 	public int hashCode() {
@@ -107,16 +108,32 @@ public class ClassDefinition {
 		return result;
 	}
 
-	public Map<String, String> getMethodVariables() {
+	public Map<String, Variable> getMethodVariables() {
 		return methodVariables;
 	}
 
-	public void setMethodVariables(Map<String, String> methodVariables) {
+	public void setMethodVariables(Map<String, Variable> methodVariables) {
 		this.methodVariables = methodVariables;
 	}
-	
-	public void addMethodVariables( String type , String varable) {
-		this.methodVariables.put(type, varable);
+
+	public void addMethodVariables(String identifier, Variable varable) {
+		this.methodVariables.put(identifier, varable);
+	}
+
+	public ArrayList<String> getMethodIdentifiers() {
+		return methodIdentifiers;
+	}
+
+	public void addMethodIdentifier(String methodIdentifier) {
+		this.methodIdentifiers.add(methodIdentifier);
+	}
+
+	public Map<String, String> getMethodIdentifierSignatureMap() {
+		return methodIdentifierSignatureMap;
+	}
+
+	public void addMethodIdentifierSignature(String identifier, String signature) {
+		this.methodIdentifierSignatureMap.put(identifier, signature);
 	}
 
 	@Override
@@ -145,7 +162,7 @@ public class ClassDefinition {
 	public String toString() {
 		return "ClassDefinition  packageName=" + packageName + ", name=" + name + ", extendsClassName="
 				+ extendsClassName + ", implementInterfaceNames=" + implementInterfaceNames + ", variables=" + variables
-				+ ", methodSignatures=" + methodSignatures ;
+				+ ", methodSignatures=" + methodSignatures;
 	}
 
 }
