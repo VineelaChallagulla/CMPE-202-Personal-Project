@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /*@startuml
 package Classic <<Folder>> {
@@ -94,6 +96,11 @@ public class ClassDefinitionsToPlantUmlTransformer {
 	private static final String IMPLEMENTS = "..|>";
 	private static final String ASSOSCIATION = "--";
 	private static final String BI_ASSOSCIATION = "--";
+	private static final String ARRAY_REGEX = "(\\w*)\\s*\\[\\s*(\\d*)\\s*\\]";
+	private static final Pattern ARRAY_PATTERN = Pattern.compile(ARRAY_REGEX);
+
+	private static final String GENERIC_REGEX = "(\\w*)\\s*<\\s*(\\w*)\\s*>";
+	private static final Pattern GENERIC_PATTERN = Pattern.compile(GENERIC_REGEX);
 
 	public enum Primitive {
 		Boolean, Char, Byte, Short, Int, Long, Float, Double, String
@@ -104,6 +111,15 @@ public class ClassDefinitionsToPlantUmlTransformer {
 		ClassDefinitionsToPlantUmlTransformer classDefinitionsToPlantUmlTransformer = new ClassDefinitionsToPlantUmlTransformer();
 		StringBuffer stringBuffer = new StringBuffer("@startuml" + "\n");
 		stringBuffer.append("skinparam ").append("classAttributeIconSize ").append("0").append("\n");
+
+		for (ClassDefinition classDefinition : listOfClassDefinitions) {
+
+			ClassRelations classRelations = ClassRelations.INSTANCE;
+			for (String interfaceName : classDefinition.getImplementInterfaceNames()) {
+				classRelations.addInterfaces(interfaceName);
+			}
+
+		}
 		for (ClassDefinition classDefinition : listOfClassDefinitions) {
 
 			ClassRelations classRelations = relationsExtractorFromClassDefinition.extractRelations(classDefinition);
@@ -170,9 +186,10 @@ public class ClassDefinitionsToPlantUmlTransformer {
 		StringBuffer buffer = new StringBuffer();
 
 		for (Entry<String, Variable> variable : variables.entrySet()) {
+			getMutiplicity(variable.getValue());
 			if (variable.getValue().getModifier().equals("-") || variable.getValue().getModifier().equals("+")) {
-				buffer.append(variable.getValue().getModifier()).append(" ").append(variable.getValue().getName())
-						.append(" : ").append(variable.getValue().getType()).append("\n");
+				buffer.append(variable.getValue().getModifier()).append(variable.getValue().getName()).append(" : ")
+						.append(variable.getValue().getType()).append("\n");
 			}
 		}
 
@@ -272,15 +289,10 @@ public class ClassDefinitionsToPlantUmlTransformer {
 					linkKey.setTarget(association.getType());
 
 					if (classRelations.getLinks().get(linkKey) == null) {
-						System.out.println("first");
-						System.out.println(link);
 						classRelations.getLinks().put(linkKey, link);
 					} else {
 						link = classRelations.getLinks().get(linkKey);
 						link.setSource_number(association.getNumber());
-						System.out.println("second");
-						System.out.println(link);
-
 					}
 				}
 			}
@@ -308,14 +320,10 @@ public class ClassDefinitionsToPlantUmlTransformer {
 					linkKey.setTarget(association.getType());
 
 					if (classRelations.getAggregationLinks().get(linkKey) == null) {
-						System.out.println("first");
-						System.out.println(link);
 						classRelations.getAggregationLinks().put(linkKey, link);
 					} else {
 						link = classRelations.getAggregationLinks().get(linkKey);
 						link.setSource_number(association.getNumber());
-						System.out.println("second");
-						System.out.println(link);
 
 					}
 				}
@@ -344,15 +352,11 @@ public class ClassDefinitionsToPlantUmlTransformer {
 					linkKey.setTarget(association.getType());
 
 					if (classRelations.getCompositionLinks().get(linkKey) == null) {
-						System.out.println("first");
-						System.out.println(link);
+
 						classRelations.getCompositionLinks().put(linkKey, link);
 					} else {
 						link = classRelations.getCompositionLinks().get(linkKey);
 						link.setSource_number(association.getNumber());
-						System.out.println("second");
-						System.out.println(link);
-
 					}
 				}
 			}
@@ -450,5 +454,33 @@ public class ClassDefinitionsToPlantUmlTransformer {
 
 		}
 		return buffer.toString();
+	}
+
+	public void getMutiplicity(Variable variable) {
+		Matcher genericMatcher = GENERIC_PATTERN.matcher(variable.getType());
+		Matcher arrayMatcher = ARRAY_PATTERN.matcher(variable.getType());
+		if (arrayMatcher.matches()) {
+			String number = null;
+			String type = arrayMatcher.group(1);
+			if (arrayMatcher.group(2) != null && !arrayMatcher.group(2).isEmpty()) {
+				number = arrayMatcher.group(2);
+
+			} else {
+
+				number = "0--*";
+			}
+			if (number != null) {
+				variable.setType(type + " " + number + " ");
+			}
+
+		} else if (genericMatcher.matches()) {
+			String type;
+			if (genericMatcher.group(2) != null) {
+				type = genericMatcher.group(2);
+				variable.setType(type + " 0--* ");
+
+			}
+
+		}
 	}
 }
