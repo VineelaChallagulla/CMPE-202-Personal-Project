@@ -1,15 +1,13 @@
 package umlparser;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import org.antlr.v4.runtime.TokenStream;
 
 import cmpe202.project.JavaBaseListener;
 import cmpe202.project.JavaParser;
-import cmpe202.project.JavaParser.AnnotationContext;
+
 import cmpe202.project.JavaParser.ConstantDeclaratorContext;
-import cmpe202.project.JavaParser.FormalParametersContext;
 import cmpe202.project.JavaParser.InterfaceMethodDeclaratorRestContext;
 import cmpe202.project.JavaParser.ModifierContext;
 import cmpe202.project.JavaParser.TypeContext;
@@ -19,8 +17,6 @@ import umlparser.Variable;
 public class JavaCoustomListner extends JavaBaseListener {
 	private String modifier;
 	private String interfaceModifier;
-	private String interfaceVoidIdentifier;
-	private Variable variable;
 
 	public String getModifier() {
 		return modifier;
@@ -213,9 +209,9 @@ public class JavaCoustomListner extends JavaBaseListener {
 
 		TokenStream tokens = parser.getTokenStream();
 		String type = "void";
-		String args = tokens.getText(ctx.formalParameters());
+		String formalArgs = tokens.getText(ctx.formalParameters());
 
-		args = args.replaceAll("\\(", "");
+		String args = formalArgs.replaceAll("\\(", "");
 		args = args.replaceAll("\\)", "");
 		if (!args.isEmpty()) {
 			String[] arsArray = new String[1];
@@ -236,6 +232,12 @@ public class JavaCoustomListner extends JavaBaseListener {
 				this.classDefinition.addConstructorVariables(ctx.Identifier().getText(), variable);
 			}
 		}
+
+		this.classDefinition.addMethodIdentifier(ctx.Identifier().getText());
+		this.classDefinition.addMethodSignature(
+				"\t" + this.modifier + " " + ctx.Identifier().getText() + formalArgs + " : " + type);
+		this.classDefinition.addMethodIdentifierSignature(ctx.Identifier().getText(),
+				"\t" + this.modifier + " " + ctx.Identifier().getText() + formalArgs + " : " + type);
 	}
 
 	@Override
@@ -268,7 +270,7 @@ public class JavaCoustomListner extends JavaBaseListener {
 	@Override
 	public void enterInterfaceBodyDeclaration(JavaParser.InterfaceBodyDeclarationContext ctx) {
 
-		this.interfaceModifier = "~";
+		this.interfaceModifier = "+";
 		for (ModifierContext modifierContext : ctx.modifiers().modifier()) {
 
 			String modifier = modifierContext.getText();
@@ -311,7 +313,7 @@ public class JavaCoustomListner extends JavaBaseListener {
 				Variable variable = new Variable();
 				variable.setName(constantDeclaratorContext.Identifier().getText());
 				variable.setType(variableType);
-				variable.setModifier(this.modifier);
+				variable.setModifier(this.interfaceModifier);
 				this.classDefinition.addVariable(constantDeclaratorContext.Identifier().getText(), variable);
 
 			}
@@ -323,8 +325,8 @@ public class JavaCoustomListner extends JavaBaseListener {
 			InterfaceMethodDeclaratorRestContext formalParametersContext = ctx.interfaceMethodOrFieldRest()
 					.interfaceMethodDeclaratorRest();
 			String formalArgs = tokens.getText(formalParametersContext.formalParameters());
-			this.classDefinition.addMethodIdentifierSignature(ctx.Identifier().getText(),
-					"\t" + this.modifier + " " + ctx.Identifier().getText() + formalArgs + " : " + variableType);
+			this.classDefinition.addMethodIdentifierSignature(ctx.Identifier().getText(), "\t" + this.interfaceModifier
+					+ " " + ctx.Identifier().getText() + formalArgs + " : " + variableType);
 			this.classDefinition.addMethodSignature(
 					"\t" + this.interfaceModifier + " " + identifier + formalArgs + " : " + variableType);
 
