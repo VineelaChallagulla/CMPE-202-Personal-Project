@@ -1,8 +1,8 @@
 # CMPE-202-Personal-Project
 
- Creating a Parser which converts Java Source Code into a UML Class Diagram.
+ Creating a Parser which converts Java Source Code into a UML Class Diagram and a UML Sequence Diagram.
  
- The tools used to generate class diagram from given test code are:  
+ The tools used to generate class diagram from given test code are:  
  
  Grammar Parser used: Antlr (http://www.antlr.org)  
  Antlr is a tool used for generating a parser for any language with defined grammar.  
