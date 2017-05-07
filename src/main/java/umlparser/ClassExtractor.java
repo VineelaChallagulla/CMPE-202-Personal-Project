@@ -31,5 +31,6 @@ public class ClassExtractor {
 		extractor.setClassDefinition(classDefinition);
 		walker.walk(extractor, tree); // initiate walk of tree with listener
 		return classDefinition;
+
 	}
 }
