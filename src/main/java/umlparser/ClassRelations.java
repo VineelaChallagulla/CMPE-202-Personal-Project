@@ -1,10 +1,9 @@
 package umlparser;
 
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 public enum ClassRelations {
 	INSTANCE;
@@ -18,6 +17,8 @@ public enum ClassRelations {
 	private Map<String, List<Association>> associationMap = new HashMap<>();
 
 	private Map<String, String> extendsMap = new HashMap<>();
+
+	private List<String> allInterfaces = new ArrayList<>();
 
 	private Map<LinkKey, Link> links = new HashMap<>();
 	private Map<LinkKey, Link> aggregationLinks = new HashMap<>();
@@ -114,6 +115,18 @@ public enum ClassRelations {
 
 	public void addAggregationLinks(LinkKey linkKey, Link link) {
 		this.aggregationLinks.put(linkKey, link);
+	}
+
+	public List<String> getAllInterfaces() {
+		return allInterfaces;
+	}
+
+	public void setAllInterfaces(List<String> allInterfaces) {
+		this.allInterfaces = allInterfaces;
+	}
+
+	public void addInterfaces(String interfaceName) {
+		this.allInterfaces.add(interfaceName);
 	}
 
 }
