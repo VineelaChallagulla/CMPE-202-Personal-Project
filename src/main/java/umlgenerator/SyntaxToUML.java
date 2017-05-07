@@ -6,19 +6,15 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 import net.sourceforge.plantuml.GeneratedImage;
 import net.sourceforge.plantuml.SourceFileReader;
 import net.sourceforge.plantuml.SourceStringReader;
-import umlparser.ClassExtractor;
 
 public class SyntaxToUML {
 
@@ -42,45 +38,42 @@ public class SyntaxToUML {
 
 	public static void main(String[] args) throws IOException, InterruptedException, URISyntaxException {
 		try {
+
 			generateUMLFromFile("uml_syntax_test_input");
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
 
 	}
-	
-	public static String getFileContent(
-			   FileInputStream fis,
-			   Charset          encoding ) throws IOException
-			 {
-			   try( BufferedReader br =
-			           new BufferedReader( new InputStreamReader(fis, encoding )))
-			   {
-			      StringBuilder sb = new StringBuilder();
-			      String line;
-			      while(( line = br.readLine()) != null ) {
-			         sb.append( line );
-			         sb.append( '\n' );
-			      }
-			      return sb.toString();
-			   }
+
+	public static String getFileContent(FileInputStream fis, Charset encoding) throws IOException {
+		try (BufferedReader br = new BufferedReader(new InputStreamReader(fis, encoding))) {
+			StringBuilder sb = new StringBuilder();
+			String line;
+			while ((line = br.readLine()) != null) {
+				sb.append(line);
+				sb.append('\n');
 			}
-	
-	public static void generateUml(String umlSyntax, String path) throws URISyntaxException, IOException{
-		
-		
-		
-		File outputFile = new File(path);
-		if(! outputFile.exists()){
-			
+			return sb.toString();
+		}
+	}
+
+	public static void generateUml(String umlSyntax, String path, String outptImageName)
+			throws URISyntaxException, IOException {
+
+		System.out.println(umlSyntax);
+
+		File outputFile = new File(path + File.separator + outptImageName);
+		if (!outputFile.exists()) {
+
 			outputFile.createNewFile();
 		}
-		
+
 		FileOutputStream png = new FileOutputStream(outputFile);
 		SourceStringReader reader = new SourceStringReader(umlSyntax);
+		System.out.println("writing to File at " + outputFile.getPath());
 		// Write the first image to "png"
-		String desc = reader.generateImage(png);		
-		
-		
+		String desc = reader.generateImage(png);
+
 	}
 }
