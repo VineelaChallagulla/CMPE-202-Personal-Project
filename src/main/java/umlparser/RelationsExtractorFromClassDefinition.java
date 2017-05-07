@@ -1,9 +1,7 @@
 package umlparser;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -23,6 +21,7 @@ public class RelationsExtractorFromClassDefinition {
 		classRelations.addExtendsRelation(classDefinition.getName(), classDefinition.getExtendsClassName());
 		setAssociationRelation(classDefinition, classRelations);
 		setAggregationRelation(classDefinition, classRelations);
+
 		setCompositionRelation(classDefinition, classRelations);
 		return classRelations;
 
@@ -42,7 +41,10 @@ public class RelationsExtractorFromClassDefinition {
 		List<Association> aggregationList = new ArrayList<>();
 
 		for (Entry<String, Variable> entry : classDefinition.getMethodVariables().entrySet()) {
-			setAssociation(aggregationList, entry);
+			if (!classRelations.getAllInterfaces().isEmpty()
+					&& classRelations.getAllInterfaces().contains(entry.getValue().getType())) {
+				setAssociation(aggregationList, entry);
+			}
 		}
 
 		classRelations.addAggregationRelation(classDefinition.getName(), aggregationList);
@@ -52,7 +54,10 @@ public class RelationsExtractorFromClassDefinition {
 		List<Association> compositionList = new ArrayList<>();
 
 		for (Entry<String, Variable> entry : classDefinition.getConstructorVariables().entrySet()) {
-			setAssociation(compositionList, entry);
+			if (!classRelations.getAllInterfaces().isEmpty()
+					&& classRelations.getAllInterfaces().contains(entry.getValue().getType())) {
+				setAssociation(compositionList, entry);
+			}
 		}
 
 		classRelations.addCompositionRelation(classDefinition.getName(), compositionList);
