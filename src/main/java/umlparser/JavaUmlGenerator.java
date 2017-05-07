@@ -21,10 +21,9 @@ public class JavaUmlGenerator {
 		Options options = new Options();
 
 		Option input = new Option("i", "input", true, "input directory path");
+		Option output = new Option("o", "output", true, "output directory path");
 		input.setRequired(true);
 		options.addOption(input);
-
-		Option output = new Option("o", "output", true, "output Directory");
 		output.setRequired(true);
 		options.addOption(output);
 
@@ -42,12 +41,14 @@ public class JavaUmlGenerator {
 		}
 
 		String inputDirectoryPath = cmd.getOptionValue("input");
-		String outputDirectoryPath = cmd.getOptionValue("output");
+		String outputPath = cmd.getOptionValue("output");
 
-		System.out.println("Input Directory " + inputDirectoryPath);
-
+		// String inputDirectoryPath = args[0];
 		LOGGER.fine("Input Directory " + inputDirectoryPath);
-		LOGGER.fine("Out Directory " + outputDirectoryPath);
+		File file = new File(inputDirectoryPath);
+		// String outptImageName = file.getName()+".png";
+		// String outputPath = file.getParent();
+		String outptImageName = "classdiagram" + ".png";
 		List<String> listOfJavaSourceFiles = getJavaSorceFiles(inputDirectoryPath);
 		ClassExtractor classExtractor = new ClassExtractor();
 		List<ClassDefinition> listOfClassDefinitions = new ArrayList<>();
@@ -62,7 +63,7 @@ public class JavaUmlGenerator {
 		String umlSyntax = classDefinitionsToPlantUmlTransformer.getUmlSyntax(listOfClassDefinitions);
 
 		try {
-			SyntaxToUML.generateUml(umlSyntax, outputDirectoryPath);
+			SyntaxToUML.generateUml(umlSyntax, outputPath, outptImageName);
 		} catch (URISyntaxException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -78,7 +79,7 @@ public class JavaUmlGenerator {
 		for (int i = 0; i < listOfFiles.length; i++) {
 			if (listOfFiles[i].isFile() && listOfFiles[i].getName().contains(".java")) {
 				LOGGER.fine("File " + listOfFiles[i].getName());
-				System.out.println("File " + listOfFiles[i].getName());
+				// System.out.println("File " + listOfFiles[i].getName());
 				listOfJavaSourceFiles.add(listOfFiles[i].getName());
 
 			}
