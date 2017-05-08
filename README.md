@@ -18,10 +18,10 @@ Java environment and Graphviz need to be installed to generate class diagrams. G
 
 
 ##### **Command to run the code:**
--i /SOURCE_PATH -o /OUTPUT_PATH
+java -jar umlparser.jar -i /SOURCE_PATH -o /OUTPUT_PATH
 
 For example:
-java -jar umlparser.jar java -jar umlparser.jar -i /home/vineela/cmpe202/umlparser/test4 -o /home/vineela/cmpe202/umlparser
+java -jar umlparser.jar -i /home/vineela/cmpe202/umlparser/test4 -o /home/vineela/cmpe202/umlparser
 
 The output folder should have the required permissions to generate the class diagram.
 
